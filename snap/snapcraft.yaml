@@ -1,0 +1,73 @@
+name: pi-oled-demo
+version: '0.1'
+summary: A demo to run an I2C attached OLED display on a Raspberry Pi
+description: |
+  This is a snap containing the adafruit Pi-OLED demos to test an I2C attached
+  OLED display on a Raspberry Pi. 
+  
+  This snap will display system statistics on an attached OLED display.
+
+  To make it work. please connect the snap to the necessary interfaces first and
+  restart the snap.
+
+  snap connect pi-oled-demo:i2c pi:i2c-1
+  snap connect pi-oled-demo:mount-observe
+  snap connect pi-oled-demo:network-observe
+  snap restart pi-oled-demo
+
+  This snap has been tested with an AzDelivery 0.96" 128x64 OLED display as well as
+  an Adafruit PiOLED - 128x32 OLED Add-on display, either of them attached via I2C
+
+  The snap also allows switching between 32 and 64 pixel height to adapt to the 
+  display resolution.
+  If you use a 128x64 pixel display you can set the resolution with
+
+  snap set pi-oled-demo height=64
+
+  respectively you can set it back to 32 pixels with
+ 
+  snap set pi-oled-demo height=32
+
+grade: stable
+confinement: strict
+
+apps:
+  stats:
+    command: daemon.sh
+    daemon: simple
+    plugs:
+      - i2c
+      - mount-observe
+      - network-observe
+
+parts:
+  oled-demos:
+    source: https://github.com/adafruit/Adafruit_Python_SSD1306.git
+    plugin: python
+    python-packages:
+      - RPi.GPIO
+    python-version: python2
+    override-build: |
+      snapcraftctl build
+      cp -av examples $SNAPCRAFT_PART_INSTALL/
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+      cp -av ../../../daemon.sh $SNAPCRAFT_PART_INSTALL/bin/
+      cd $SNAPCRAFT_PART_INSTALL/examples
+      patch -p0 <../../../../stats.patch
+    build-packages:
+      - gcc
+      - git
+      - libssl-dev
+      - libffi-dev
+      - patch
+      - python-dev
+      - python-imaging
+      - python-smbus
+    stage-packages:
+      - coreutils
+      - hostname
+      - libffi6
+      - libssl1.0.0
+      - procps
+      - python-imaging
+      - python-smbus

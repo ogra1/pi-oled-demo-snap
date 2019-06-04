@@ -1,0 +1,11 @@
+#! /bin/sh
+
+disp_height="$(snapctl get height)"
+
+if [ -z "$disp_height" ]; then
+    snapctl set height=32
+else
+    snapctl set height="$disp_height"
+fi
+
+snapctl restart ${SNAP_NAME}.stats 2>&1 || true

@@ -5,7 +5,8 @@ description: |
   This is a snap containing the adafruit Pi-OLED demos to test an I2C attached
   OLED display on a Raspberry Pi. 
   
-  This snap will display system statistics on an attached OLED display.
+  This snap will show a splash and then display system statistics on an
+  attached OLED display.
 
   To make it work. please connect the snap to the necessary interfaces first and
   restart the snap.
@@ -13,6 +14,7 @@ description: |
   snap connect pi-oled-demo:i2c pi:i2c-1
   snap connect pi-oled-demo:mount-observe
   snap connect pi-oled-demo:network-observe
+  snap connect pi-oled-demo:gpio-memory-control
   snap restart pi-oled-demo
 
   This snap has been tested with an AzDelivery 0.96" 128x64 OLED display as well as
@@ -42,6 +44,7 @@ apps:
       - i2c
       - mount-observe
       - network-observe
+      - gpio-memory-control
 
 parts:
   oled-demos:
@@ -56,7 +59,9 @@ parts:
       mkdir -p $SNAPCRAFT_PART_INSTALL/bin
       cp -av ../../../daemon.sh $SNAPCRAFT_PART_INSTALL/bin/
       cd $SNAPCRAFT_PART_INSTALL/examples
+      cp ../../../../core_white_hex_*.png $SNAPCRAFT_PART_INSTALL/examples
       patch -p0 <../../../../stats.patch
+      patch -p0 <../../../../image.patch
     build-packages:
       - gcc
       - git

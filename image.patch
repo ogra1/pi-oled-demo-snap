@@ -1,0 +1,36 @@
+--- parts/oled-demos/src/examples/image.py	2019-06-05 09:54:07.610599678 +0000
++++ image.py	2019-06-05 10:04:40.539530753 +0000
+@@ -19,6 +19,7 @@
+ # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ # THE SOFTWARE.
+ import time
++import os
+ 
+ import Adafruit_GPIO.SPI as SPI
+ import Adafruit_SSD1306
+@@ -52,6 +53,13 @@
+ # 128x64 display with hardware SPI:
+ # disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST, dc=DC, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE, max_speed_hz=8000000))
+ 
++snap = os.environ.get('SNAP', None)
++disp_height = os.environ.get('DISP_HEIGHT', None)
++
++if disp_height == "64":
++    disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST)
++
++
+ # Initialize library.
+ disp.begin()
+ 
+@@ -61,9 +69,9 @@
+ 
+ # Load image based on OLED display height.  Note that image is converted to 1 bit color.
+ if disp.height == 64:
+-    image = Image.open('happycat_oled_64.ppm').convert('1')
++    image = Image.open(snap+'/examples/core_white_hex_64.png').resize((disp.width, disp.height), Image.ANTIALIAS).convert('1')
+ else:
+-    image = Image.open('happycat_oled_32.ppm').convert('1')
++    image = Image.open(snap+'/examples/core_white_hex_32.png').resize((disp.width, disp.height), Image.ANTIALIAS).convert('1')
+ 
+ # Alternatively load a different format image, resize it, and convert to 1 bit color.
+ #image = Image.open('happycat.png').resize((disp.width, disp.height), Image.ANTIALIAS).convert('1')

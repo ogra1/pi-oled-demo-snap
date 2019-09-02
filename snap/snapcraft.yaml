@@ -79,3 +79,4 @@ parts:
       - procps
       - python-imaging
       - python-smbus
+      - ttf-ubuntu-font-family

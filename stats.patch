@@ -1,5 +1,5 @@
---- parts/oled-demos/src/examples/stats.py	2019-06-04 16:17:37.067336992 +0000
-+++ stats.py	2019-06-04 16:27:30.211278846 +0000
+--- parts/oled-demos/src/examples/stats.py	2019-09-02 13:25:40.661544704 +0000
++++ stats.py	2019-09-02 14:47:24.841273136 +0000
 @@ -19,6 +19,7 @@
  # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  # THE SOFTWARE.
@@ -8,11 +8,12 @@
  
  import Adafruit_GPIO.SPI as SPI
  import Adafruit_SSD1306
-@@ -67,6 +68,11 @@
+@@ -67,6 +68,12 @@
  # on a Raspberry Pi with the 128x32 display you might use:
  # disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST, dc=DC, sclk=18, din=25, cs=22)
  
 +disp_height = os.environ.get('DISP_HEIGHT', None)
++snap = os.environ.get('SNAP', None)
 +
 +if disp_height == "64":
 +    disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST)
@@ -20,17 +21,39 @@
  # Initialize library.
  disp.begin()
  
-@@ -110,11 +116,11 @@
+@@ -96,7 +103,8 @@
+ 
+ 
+ # Load default font.
+-font = ImageFont.load_default()
++#font = ImageFont.load_default()
++font = ImageFont.truetype(snap+'/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf', 13)
+ 
+ # Alternatively load a TTF font.  Make sure the .ttf font file is in the same directory as the python script!
+ # Some other nice fonts to try: http://www.dafont.com/bitmap.php
+@@ -110,19 +118,19 @@
      # Shell scripts for system monitoring from here : https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-usage-and-cpu-load
      cmd = "hostname -I | cut -d\' \' -f1"
      IP = subprocess.check_output(cmd, shell = True )
 -    cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
 +    cmd = "cat /proc/loadavg | cut -d' ' -f1 | awk '{printf \"CPU Load: %.2f\", $1}'"
      CPU = subprocess.check_output(cmd, shell = True )
-     cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'"
+-    cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'"
++    cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%sMB %.0f%%\", $3,$2,$3*100/$2 }'"
      MemUsage = subprocess.check_output(cmd, shell = True )
 -    cmd = "df -h | awk '$NF==\"/\"{printf \"Disk: %d/%dGB %s\", $3,$2,$5}'"
 +    cmd = "df -h | grep /writable | awk '{printf \"Disk: %d/%dGB %s\", $3,$2,$5}'"
      Disk = subprocess.check_output(cmd, shell = True )
  
      # Write two lines of text.
+ 
+     draw.text((x, top),       "IP: " + str(IP),  font=font, fill=255)
+-    draw.text((x, top+8),     str(CPU), font=font, fill=255)
+-    draw.text((x, top+16),    str(MemUsage),  font=font, fill=255)
+-    draw.text((x, top+25),    str(Disk),  font=font, fill=255)
++    draw.text((x, top+15),     str(CPU), font=font, fill=255)
++    draw.text((x, top+30),    str(MemUsage),  font=font, fill=255)
++    draw.text((x, top+45),    str(Disk),  font=font, fill=255)
+ 
+     # Display image.
+     disp.image(image)

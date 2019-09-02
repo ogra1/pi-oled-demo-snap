@@ -30,6 +30,7 @@ description: |
  
   snap set pi-oled-demo height=32
 
+base: core18
 grade: stable
 confinement: strict
 architectures:
@@ -69,7 +70,7 @@ parts:
       - libffi-dev
       - patch
       - python-dev
-      - python-imaging
+      - python-pil
       - python-smbus
     stage-packages:
       - coreutils
@@ -77,6 +78,6 @@ parts:
       - libffi6
       - libssl1.0.0
       - procps
-      - python-imaging
+      - python-pil
       - python-smbus
       - ttf-ubuntu-font-family
